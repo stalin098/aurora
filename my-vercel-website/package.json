@@ -1,0 +1,12 @@
+{
+  "name": "my-vercel-website",
+  "version": "1.0.0",
+  "description": "Website with database on Vercel",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.8.0"
+  }
+}
