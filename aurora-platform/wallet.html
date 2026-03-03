@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Wallet</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .wallet-hero {
+            background: linear-gradient(135deg, rgba(44, 26, 46, 0.9), rgba(109, 59, 92, 0.2));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--sp-2xl);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--sp-lg);
+            margin-bottom: var(--sp-2xl);
+        }
+
+        .balance-box {
+            text-align: center;
+        }
+
+        .balance-val {
+            font-family: var(--font-serif);
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .balance-val.connection {
+            color: var(--gold);
+        }
+
+        .balance-val.experience {
+            color: var(--blush);
+        }
+
+        .balance-lbl {
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: var(--sp-xs);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-2xl);
+        }
+
+        .price-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(184, 155, 122, 0.15);
+        }
+
+        .price-card.popular {
+            border-color: var(--gold);
+        }
+
+        .price-card.popular::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: 12px;
+            right: -26px;
+            background: var(--gold);
+            color: var(--aubergine);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 4px 24px;
+            transform: rotate(45deg);
+        }
+
+        .pkg-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--sp-md);
+        }
+
+        .pkg-tokens {
+            font-family: var(--font-serif);
+            font-size: var(--fs-2xl);
+            font-weight: 700;
+            color: var(--cream);
+        }
+
+        .pkg-bonus {
+            font-size: var(--fs-sm);
+            color: var(--success);
+            font-weight: 600;
+            min-height: 20px;
+            margin: 4px 0 var(--sp-sm);
+        }
+
+        .pkg-price {
+            font-size: var(--fs-lg);
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: var(--sp-md);
+        }
+
+        .gateway-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-sm);
+        }
+
+        .gateway-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: var(--sp-lg);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: left;
+            width: 100%;
+            color: var(--cream);
+        }
+
+        .gateway-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--gold);
+        }
+
+        .gateway-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gateway-name {
+            font-weight: 600;
+            font-size: var(--fs-md);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--sp-md);
+            font-size: var(--fs-sm);
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: var(--sp-sm);
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+            font-size: var(--fs-xs);
+            text-transform: uppercase;
+        }
+
+        .history-table td {
+            padding: var(--sp-md) var(--sp-sm);
+            border-bottom: 1px solid rgba(184, 155, 122, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora Wallet</div>
+    </div>
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item active"><span class="s-icon">💰</span> Wallet</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+
+            <!-- Balances -->
+            <div class="wallet-hero">
+                <div class="balance-box">
+                    <div class="balance-val connection" data-token-display="connection">83</div>
+                    <div class="balance-lbl">Connection Tokens</div>
+                </div>
+                <div class="balance-box">
+                    <div class="balance-val experience" data-token-display="experience">50</div>
+                    <div class="balance-lbl">Experience Tokens</div>
+                </div>
+            </div>
+
+            <!-- Shop -->
+            <h3 style="font-family:var(--font-serif);margin-bottom:var(--sp-lg);">Purchase Tokens</h3>
+            <div class="tabs" style="display:flex;gap:var(--sp-sm);margin-bottom:var(--sp-xl);">
+                <button class="btn btn-primary btn-sm" id="tabConn">Connection (Chats, Roulette)</button>
+                <button class="btn btn-ghost btn-sm" id="tabExp"
+                    onclick="Aurora.showToast('Experience token shop coming soon', 'gold')">Experience (Booking
+                    Escrow)</button>
+            </div>
+
+            <div class="pricing-grid" id="pricingGrid"></div>
+
+            <!-- History -->
+            <div class="mt-2xl">
+                <h3 style="font-family:var(--font-serif);margin-bottom:var(--sp-lg);">Transaction History</h3>
+                <div style="overflow-x:auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item active"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Select Payment Method</div>
+            <div style="text-align:center;margin-bottom:var(--sp-xl);">
+                <div style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:4px;">You are purchasing</div>
+                <div style="font-family:var(--font-serif);font-size:var(--fs-2xl);font-weight:700;color:var(--gold);"
+                    id="coPackage">100 Tokens</div>
+                <div style="font-size:var(--fs-lg);color:var(--cream);margin-top:4px;" id="coPrice">KES 1,000</div>
+            </div>
+            <div class="gateway-list" id="gatewayList"></div>
+            <button class="btn btn-ghost btn-block mt-lg" data-close-modal="checkoutModal">Cancel</button>
+        </div>
+    </div>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script src="js/aurora-payments.js"></script>
+    <script>
+        let selectedPackage = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Build packages
+            const pkgs = AuroraData.getTokenPackages().filter(p => p.type === 'connection');
+            const grid = document.getElementById('pricingGrid');
+            grid.innerHTML = pkgs.map(p => `
+        <div class="price-card ${p.id === 'conn_2' ? 'popular' : ''}" onclick="startCheckout('${p.id}')">
+          <div class="pkg-icon">🪙</div>
+          <div class="pkg-tokens">${p.tokens} TKN</div>
+          <div class="pkg-bonus">${p.bonusTokens ? `+ ${p.bonusTokens} Bonus` : ''}</div>
+          <div class="pkg-price">KES ${(p.priceKES).toLocaleString()}</div>
+          <button class="btn btn-secondary btn-sm" style="width:100%;">Select</button>
+        </div>
+      `).join('');
+
+            // Build history
+            const history = AuroraTokens.getHistory().slice(0, 10);
+            const tbody = document.getElementById('historyTbody');
+            tbody.innerHTML = history.map(h => `
+        <tr>
+          <td><span style="color:var(--text-muted);font-size:var(--fs-xs);">${Aurora.timeAgo(h.date)}</span></td>
+          <td><span class="badge ${h.amount > 0 ? 'badge-green' : 'badge-red'}">${h.amount > 0 ? 'In' : 'Out'}</span></td>
+          <td style="font-weight:700;color:${h.amount > 0 ? 'var(--gold)' : 'var(--text-primary)'}">${h.amount > 0 ? '+' : ''}${h.amount}</td>
+          <td style="color:var(--text-secondary);">${h.reason}</td>
+        </tr>
+      `).join('');
+        });
+
+        function startCheckout(pkgId) {
+            selectedPackage = AuroraData.getTokenPackages().find(p => p.id === pkgId);
+            document.getElementById('coPackage').textContent = selectedPackage.tokens + (selectedPackage.bonusTokens || 0) + ' Tokens';
+            document.getElementById('coPrice').textContent = 'KES ' + selectedPackage.priceKES.toLocaleString();
+
+            const gws = AuroraPayments.getGateways();
+            const gList = document.getElementById('gatewayList');
+            gList.innerHTML = Object.keys(gws).map(k => `
+        <button class="gateway-btn" onclick="doPayment('${k}')">
+          <div class="gateway-icon" style="background:${gws[k].color}20;border:1px solid ${gws[k].color};">${gws[k].icon}</div>
+          <div style="flex:1;">
+            <div class="gateway-name">${gws[k].name}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Private & Secure via ${gws[k].provider}</div>
+          </div>
+          <div style="color:var(--text-muted);">→</div>
+        </button>
+      `).join('');
+
+            Aurora.openModal('checkoutModal');
+        }
+
+        function doPayment(gatewayId) {
+            Aurora.closeModal('checkoutModal');
+            if (gatewayId === 'mpesa') {
+                const phone = prompt('Enter your Safaricom Number (e.g. 0712345678):', '');
+                if (!phone) return;
+                AuroraPayments.initMpesaSTK(phone, selectedPackage.priceKES, (success) => {
+                    if (success) executePayment(gatewayId, phone);
+                });
+            } else {
+                executePayment(gatewayId);
+            }
+        }
+
+        function executePayment(gatewayId, phone) {
+            AuroraPayments.processPurchase({
+                packageId: selectedPackage.id,
+                gateway: gatewayId,
+                amount: selectedPackage.priceKES,
+                tokens: selectedPackage.tokens,
+                phone: phone,
+                onSuccess: (res) => {
+                    Aurora.showToast(`Success! Added ${res.tokens} tokens to your wallet.`, 'success', 5000);
+                    setTimeout(() => location.reload(), 2000);
+                },
+                onError: (err) => { }
+            });
+        }
+    </script>
+</body>
+
+</html>

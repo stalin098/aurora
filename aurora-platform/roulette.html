@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Roulette Matching</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        body {
+            background: radial-gradient(ellipse at 50% 10%, rgba(109, 59, 92, 0.5) 0%, var(--aubergine) 60%);
+        }
+
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+            text-align: center;
+        }
+
+        .wheel-section {
+            margin: var(--sp-2xl) auto;
+            position: relative;
+            max-width: 360px;
+        }
+
+        .bet-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-lg);
+            justify-content: center;
+            margin: var(--sp-xl) 0;
+        }
+
+        .bet-val {
+            font-family: var(--font-serif);
+            font-size: var(--fs-3xl);
+            color: var(--gold);
+            font-weight: 700;
+            min-width: 60px;
+        }
+
+        .bet-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--cream);
+            font-size: var(--fs-xl);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .bet-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .result-card {
+            background: rgba(44, 26, 46, 0.95);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-xl);
+            padding: var(--sp-2xl);
+            max-width: 380px;
+            margin: var(--sp-xl) auto;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .result-emoji {
+            font-size: 4.5rem;
+            margin-bottom: var(--sp-lg);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-xl);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .history-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--sp-md) var(--sp-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .spinning {
+            pointer-events: none;
+        }
+
+        .wheel-outer {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto;
+        }
+
+        .wheel-pin-outer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            z-index: 10;
+            filter: drop-shadow(0 2px 8px rgba(184, 155, 122, 0.7));
+        }
+
+        .pulse-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+            border: 3px solid var(--aubergine);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--aubergine);
+            font-weight: 800;
+            font-size: var(--fs-xs);
+            text-align: center;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(184, 155, 122, 0.4);
+            transition: transform var(--transition-fast);
+        }
+
+        .pulse-center:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora</div>
+        <div style="display:flex;gap:var(--sp-md);align-items:center;">
+            <div class="token-chip"><span class="chip-icon">🪙</span><span data-token-display="connection">83</span>
+            </div>
+            <a href="dashboard.html" class="btn btn-ghost btn-sm">← Back</a>
+        </div>
+    </div>
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item active"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item"><span class="s-icon">💰</span> Wallet</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+            <span class="section-eyebrow">Aurora Roulette</span>
+            <h1 style="font-size:clamp(2rem,5vw,3.5rem);margin-bottom:var(--sp-md);">
+                Spin for a <span class="shimmer-text">Match</span>
+            </h1>
+            <p class="text-muted" style="max-width:400px;margin:0 auto var(--sp-xl);font-size:var(--fs-lg);">
+                Wager Connection Tokens and let fate decide your next introduction. Higher bets reach wider distances.
+            </p>
+
+            <!-- Token Bet -->
+            <div class="bet-selector">
+                <button class="bet-btn" onclick="adjustBet(-5)">−</button>
+                <div>
+                    <div class="bet-val" id="betAmount">5</div>
+                    <div style="font-size:var(--fs-xs);color:var(--text-muted);">TOKENS</div>
+                </div>
+                <button class="bet-btn" onclick="adjustBet(+5)">+</button>
+            </div>
+
+            <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-xl);">
+                <div class="cost-badges" style="display:flex;gap:var(--sp-sm);justify-content:center;flex-wrap:wrap;">
+                    <span class="badge badge-gray">5 tokens → Nairobi</span>
+                    <span class="badge badge-gold">15 tokens → All Kenya</span>
+                    <span class="badge badge-blush">25 tokens → Health Verified Only</span>
+                </div>
+            </div>
+
+            <!-- Wheel -->
+            <div class="wheel-section">
+                <div class="wheel-outer">
+                    <div class="wheel-pin-outer">🔻</div>
+                    <div id="wheelCanvas"></div>
+                    <div class="pulse-center" id="spinBtn" onclick="doSpin()">SPIN</div>
+                </div>
+            </div>
+
+            <!-- Spinning indicator -->
+            <div id="spinningMsg" style="display:none;margin:var(--sp-lg) 0;">
+                <p
+                    style="color:var(--gold);font-family:var(--font-serif);font-size:var(--fs-xl);animation:heartbeat 1.2s ease infinite;">
+                    Finding your match…</p>
+            </div>
+
+            <!-- Result Card -->
+            <div id="resultCard" style="display:none;">
+                <div class="result-card">
+                    <div class="result-emoji" id="resultEmoji">👨🏾</div>
+                    <div class="badge badge-gold mb-md">✦ Roulette Match</div>
+                    <h3 style="font-family:var(--font-serif);font-size:var(--fs-2xl);margin-bottom:var(--sp-sm);"
+                        id="resultAlias">StormAce</h3>
+                    <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:var(--sp-sm);"
+                        id="resultCity"></p>
+                    <p style="font-size:var(--fs-sm);color:var(--text-secondary);margin-bottom:var(--sp-xl);line-height:1.6;"
+                        id="resultBio"></p>
+                    <div id="resultBadges"
+                        style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--sp-xl);">
+                    </div>
+                    <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-lg);">They have 30
+                        seconds to accept or decline…</p>
+                    <div id="acceptButtons"
+                        style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+                        <button class="btn btn-primary btn-lg" onclick="acceptMatch()">Accept Connection</button>
+                        <button class="btn btn-secondary" onclick="resetWheel()">Spin Again</button>
+                    </div>
+                    <div id="matchResult" style="display:none;margin-top:var(--sp-xl);">
+                        <div class="badge badge-green mb-md">✓ Match Accepted!</div>
+                        <p style="font-size:var(--fs-sm);color:var(--text-muted);">You can now message each other.
+                            Message costs 2 tokens.</p>
+                        <a href="messages.html" class="btn btn-primary mt-lg">Go to Messages</a>
+                    </div>
+                    <div id="noMatch" style="display:none;margin-top:var(--sp-xl);">
+                        <div class="badge badge-red mb-md">They passed this time.</div>
+                        <button class="btn btn-secondary mt-md" onclick="resetWheel()">Spin Again</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roulette History -->
+            <div class="mt-2xl" style="text-align:left;max-width:500px;margin-left:auto;margin-right:auto;">
+                <h4 style="font-family:var(--font-serif);margin-bottom:var(--sp-lg);">Recent Spins</h4>
+                <div class="history-list" id="historyList">
+                    <div class="history-item">
+                        <div>
+                            <div style="font-weight:700;font-size:var(--fs-sm);">BlueFlame</div>
+                            <div style="font-size:var(--fs-xs);color:var(--text-muted);">10 tokens · 2h ago</div>
+                        </div>
+                        <span class="badge badge-green">Accepted</span>
+                    </div>
+                    <div class="history-item">
+                        <div>
+                            <div style="font-weight:700;font-size:var(--fs-sm);">EbonyEdge</div>
+                            <div style="font-size:var(--fs-xs);color:var(--text-muted);">5 tokens · 1d ago</div>
+                        </div>
+                        <span class="badge badge-gray">Declined</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item active"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script src="js/aurora-roulette.js"></script>
+    <script>
+        let betAmount = 5;
+        let currentMatch = null;
+
+        function adjustBet(delta) {
+            betAmount = Math.max(5, Math.min(50, betAmount + delta));
+            document.getElementById('betAmount').textContent = betAmount;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const profiles = AuroraData.getCompanions().filter(p => p.verificationStatus === 'verified');
+            AuroraRoulette.buildWheel(document.getElementById('wheelCanvas'), profiles);
+            AuroraTokens.refreshDisplays();
+        });
+
+        function doSpin() {
+            const spinBtn = document.getElementById('spinBtn');
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('spinningMsg').style.display = 'block';
+            spinBtn.style.pointerEvents = 'none';
+            spinBtn.textContent = '…';
+
+            AuroraRoulette.spin({
+                betTokens: betAmount,
+                userRole: 'client',
+                onResult: (winner) => {
+                    currentMatch = winner;
+                    document.getElementById('spinningMsg').style.display = 'none';
+                    spinBtn.style.pointerEvents = 'all';
+                    spinBtn.textContent = 'SPIN';
+                    showResult(winner);
+                }
+            });
+        }
+
+        function showResult(profile) {
+            document.getElementById('resultEmoji').textContent = profile.emoji;
+            document.getElementById('resultAlias').textContent = profile.alias;
+            document.getElementById('resultCity').textContent = profile.city + ' · Age ' + profile.ageRange[0];
+            document.getElementById('resultBio').textContent = profile.bio.slice(0, 100) + '…';
+            const badges = document.getElementById('resultBadges');
+            badges.innerHTML = profile.vibeTags.slice(0, 3).map(t => `<span class="chip active">${t}</span>`).join('');
+            if (profile.healthVerified) badges.innerHTML += '<span class="badge badge-green">✓ Health</span>';
+            document.getElementById('acceptButtons').style.display = 'flex';
+            document.getElementById('matchResult').style.display = 'none';
+            document.getElementById('noMatch').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'block';
+        }
+
+        function acceptMatch() {
+            document.getElementById('acceptButtons').style.display = 'none';
+            const accepted = AuroraRoulette.acceptMatch(currentMatch?.userId);
+            if (accepted) {
+                document.getElementById('matchResult').style.display = 'block';
+            } else {
+                document.getElementById('noMatch').style.display = 'block';
+            }
+        }
+
+        function resetWheel() {
+            document.getElementById('resultCard').style.display = 'none';
+            currentMatch = null;
+        }
+    </script>
+</body>
+
+</html>

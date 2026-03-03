@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Admin Operations</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        body {
+            background: #110912;
+        }
+
+        .admin-bar {
+            background: var(--plum-dark);
+            border-bottom: 2px solid var(--gold);
+            padding: var(--sp-md) var(--sp-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--sp-xl);
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-xl);
+        }
+
+        .stat-card {
+            background: rgba(44, 26, 46, 0.6);
+            padding: var(--sp-lg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .stat-card .val {
+            font-size: 2rem;
+            font-family: var(--font-serif);
+            color: var(--gold);
+        }
+
+        .stat-card .lbl {
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--sp-xl);
+            align-items: start;
+        }
+
+        .admin-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: var(--sp-xl);
+        }
+
+        .panel-title {
+            font-family: var(--font-serif);
+            font-size: var(--fs-xl);
+            margin-bottom: var(--sp-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .queue-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--sp-md);
+            margin-bottom: var(--sp-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--sp-md);
+        }
+
+        .queue-id-photo {
+            width: 100px;
+            height: 60px;
+            background: #222;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--fs-xs);
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-bar">
+        <div style="font-family:var(--font-serif);font-size:var(--fs-xl);color:var(--gold);">✦ Aurora Admin Ops</div>
+        <a href="index.html" class="btn btn-ghost btn-sm">Exit Admin</a>
+    </div>
+
+    <div class="page-content">
+
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="val" id="stRev">KES 0</div>
+                <div class="lbl">Total Gateway Rev</div>
+            </div>
+            <div class="stat-card">
+                <div class="val" id="stUsers">0</div>
+                <div class="lbl">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="val" id="stVenues">0</div>
+                <div class="lbl">Partner Venues</div>
+            </div>
+            <div class="stat-card" style="border-color:var(--blush);">
+                <div class="val" id="stIDs">0</div>
+                <div class="lbl">Pending IDs</div>
+            </div>
+            <div class="stat-card" style="border-color:var(--danger);">
+                <div class="val" id="stDisputes">0</div>
+                <div class="lbl">Disputes</div>
+            </div>
+        </div>
+
+        <div class="panel-grid">
+            <!-- ID Queue -->
+            <div class="admin-panel">
+                <div class="panel-title">
+                    <span>Identity Verification Queue</span>
+                    <span class="badge badge-gray" id="qCountID">0 pending</span>
+                </div>
+                <div id="idQueueList"></div>
+            </div>
+
+            <!-- Disputes -->
+            <div class="admin-panel">
+                <div class="panel-title">
+                    <span style="color:var(--danger);">Escrow Disputes</span>
+                    <span class="badge badge-red" id="qCountDispute">0 active</span>
+                </div>
+                <div id="disputeList"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script src="js/aurora-booking.js"></script>
+    <script src="js/aurora-admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDashboard();
+        });
+
+        function renderDashboard() {
+            const stats = AuroraAdmin.getStats();
+            const queues = AuroraAdmin.getQueues();
+
+            document.getElementById('stRev').textContent = 'KES ' + stats.revenue.toLocaleString();
+            document.getElementById('stUsers').textContent = stats.activeUsers;
+            document.getElementById('stVenues').textContent = stats.activeVenues;
+            document.getElementById('stIDs').textContent = stats.pendingIDs;
+            document.getElementById('stDisputes').textContent = stats.pendingDisputes;
+
+            document.getElementById('qCountID').textContent = queues.idQueue.length + ' pending';
+            document.getElementById('idQueueList').innerHTML = queues.idQueue.map(q => `
+        <div class="queue-item">
+          <div style="display:flex;gap:var(--sp-md);">
+            <div class="queue-id-photo">ID_FRONT_${q.userId}</div>
+            <div>
+              <div style="font-weight:700;">${q.userId}</div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted);">Submitted: ${Aurora.timeAgo(q.submittedAt)}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn btn-primary btn-sm" onclick="handleID('${q.userId}', 'approve')">Approve ✓</button>
+            <button class="btn btn-secondary btn-sm" onclick="handleID('${q.userId}', 'reject')">Reject ✕</button>
+          </div>
+        </div>
+      `).join('') || '<div class="text-muted" style="text-align:center;padding:var(--sp-xl);">No pending IDs</div>';
+
+            document.getElementById('qCountDispute').textContent = queues.disputeQueue.length + ' active';
+            document.getElementById('disputeList').innerHTML = queues.disputeQueue.map(d => `
+        <div class="queue-item" style="border-left:3px solid var(--danger);">
+          <div style="flex:1;">
+            <div style="font-weight:700;">Booking #${d.bookingId.slice(0, 6)}</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-muted);">Client Rating: 2 ★</div>
+            <div style="font-size:var(--fs-xs);color:var(--gold);margin-top:4px;">Escrow held: KES ${d.escrowAmount}</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="resolveDispute('${d.bookingId}')">Review Case</button>
+        </div>
+      `).join('') || '<div class="text-muted" style="text-align:center;padding:var(--sp-xl);">No active disputes</div>';
+        }
+
+        function handleID(userId, action) {
+            if (action === 'approve') AuroraAdmin.approveID(userId);
+            else AuroraAdmin.rejectID(userId, 'Blurred photo');
+            renderDashboard();
+        }
+
+        function resolveDispute(bookingId) {
+            if (confirm('Simulate dispute resolution (Refund Client)?')) {
+                AuroraAdmin.resolveDispute(bookingId, 'Client Refunded');
+                renderDashboard();
+            }
+        }
+    </script>
+</body>
+
+</html>

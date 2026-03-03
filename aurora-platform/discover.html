@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Discover</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .page-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .discover-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: var(--sp-2xl);
+            align-items: start;
+        }
+
+        .swipe-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--sp-xl);
+        }
+
+        .swipe-controls {
+            display: flex;
+            gap: var(--sp-xl);
+            align-items: center;
+        }
+
+        .pass-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--danger);
+            font-size: 1.5rem;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .pass-btn:hover {
+            background: rgba(192, 80, 77, 0.1);
+            border-color: var(--danger);
+            transform: scale(1.1);
+        }
+
+        .like-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+            border: none;
+            color: var(--aubergine);
+            font-size: 1.75rem;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            box-shadow: var(--shadow-gold);
+        }
+
+        .like-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(184, 155, 122, 0.5);
+        }
+
+        .super-like-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--plum-light);
+            color: var(--blush);
+            font-size: 1.2rem;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .super-like-btn:hover {
+            background: rgba(109, 59, 92, 0.2);
+            transform: scale(1.1);
+        }
+
+        .filter-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-xl);
+            position: sticky;
+            top: 80px;
+        }
+
+        .match-modal-content {
+            padding: var(--sp-2xl) var(--sp-xl);
+            text-align: center;
+        }
+
+        .match-avatars {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--sp-lg);
+            font-size: 3.5rem;
+            margin-bottom: var(--sp-xl);
+        }
+
+        .match-heart {
+            font-size: 2rem;
+            animation: heartbeat 1.2s ease infinite;
+        }
+
+        .cost-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(184, 155, 122, 0.1);
+            border: 1px solid rgba(184, 155, 122, 0.25);
+            border-radius: var(--radius-pill);
+            padding: .3rem .875rem;
+            font-size: var(--fs-xs);
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        @media(max-width:768px) {
+            .discover-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-panel {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora</div>
+        <div style="display:flex;gap:var(--sp-md);align-items:center;">
+            <div class="token-chip" onclick="window.location.href='wallet.html'" style="cursor:pointer;">
+                <span class="chip-icon">🪙</span><span data-token-display="total">83</span>
+            </div>
+            <a href="dashboard.html" class="btn btn-ghost btn-sm">← Back</a>
+        </div>
+    </div>
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item active"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item"><span class="s-icon">💰</span> Wallet</a>
+        <div class="divider"></div>
+        <a href="settings.html" class="sidebar-item"><span class="s-icon">⚙️</span> Settings</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+            <div class="mb-xl">
+                <h2 style="font-family:var(--font-serif);">Discover</h2>
+                <p class="text-muted" style="font-size:var(--fs-sm);">Swipe to like or pass. Mutual likes create a
+                    connection.</p>
+            </div>
+
+            <div class="discover-layout">
+                <!-- Swipe Cards -->
+                <div class="swipe-area">
+                    <div class="swipe-stack" id="swipeStack"></div>
+
+                    <div class="swipe-controls">
+                        <button class="pass-btn" onclick="swipe('left')" title="Pass">✕</button>
+                        <button class="super-like-btn" onclick="swipe('super')" title="Super Like">⭐</button>
+                        <button class="like-btn" onclick="swipe('right')" title="Like">♥</button>
+                    </div>
+
+                    <div class="cost-badge">♥ Matches are free · Message costs 2 tokens</div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-panel">
+                    <h4 style="font-family:var(--font-serif);margin-bottom:var(--sp-lg);">Filter Matches</h4>
+                    <div class="input-group">
+                        <label class="input-label">City</label>
+                        <select class="input-field" id="filterCity" onchange="applyFilters()">
+                            <option value="">All Kenya</option>
+                            <option>Nairobi</option>
+                            <option>Mombasa</option>
+                            <option>Kisumu</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Age Range</label>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-sm);">
+                            <input type="number" class="input-field" id="filterAgeMin" placeholder="Min" min="21"
+                                max="40" value="21" onchange="applyFilters()" />
+                            <input type="number" class="input-field" id="filterAgeMax" placeholder="Max" min="21"
+                                max="40" value="35" onchange="applyFilters()" />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Meeting Type</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="meetFilter">
+                            <div class="chip active" onclick="this.classList.toggle('active')">Dinner</div>
+                            <div class="chip active" onclick="this.classList.toggle('active')">Outing</div>
+                            <div class="chip active" onclick="this.classList.toggle('active')">Private</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Health Verified Only</label>
+                        <label style="display:flex;align-items:center;gap:var(--sp-sm);cursor:pointer;">
+                            <input type="checkbox" id="filterHealth" onchange="applyFilters()"
+                                style="width:16px;height:16px;accent-color:var(--gold);" />
+                            <span style="font-size:var(--fs-sm);">Show only ✓ health verified</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-block mt-md" onclick="applyFilters()">Apply Filters</button>
+                    <div style="margin-top:var(--sp-lg);">
+                        <p style="font-size:var(--fs-xs);color:var(--text-muted);text-align:center;" id="matchCount">
+                            Showing 7 companions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Match Modal -->
+    <div class="modal-overlay" id="matchModal">
+        <div class="modal glass-card-strong" style="border-radius:var(--radius-xl);">
+            <div class="match-modal-content">
+                <div class="match-avatars">
+                    <span id="matchEmoji1">👩🏾</span>
+                    <span class="match-heart">💖</span>
+                    <span id="matchEmoji2">👨🏾</span>
+                </div>
+                <span class="badge badge-gold mb-md">✦ Aurora Match</span>
+                <h3 style="font-family:var(--font-serif);margin:var(--sp-md) 0 var(--sp-sm);">It's a Connection!</h3>
+                <p class="text-muted" style="font-size:var(--fs-sm);margin-bottom:var(--sp-xl);">You and <strong
+                        id="matchAlias">StormAce</strong> both liked each other. Send a message to start things off.</p>
+                <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-lg" onclick="goToMessage()">💬 Message (2 tokens)</button>
+                    <button class="btn btn-secondary" data-close-modal="matchModal">Keep Swiping</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item active"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script>
+        let cardQueue = [];
+        let currentIdx = 0;
+        let likedProfiles = [];
+
+        function buildCards() {
+            cardQueue = AuroraData.getCompanions().filter(p => p.verificationStatus === 'verified');
+            renderStack();
+        }
+
+        function renderStack() {
+            const stack = document.getElementById('swipeStack');
+            stack.innerHTML = '';
+            const visible = cardQueue.slice(currentIdx, currentIdx + 3);
+            visible.forEach((p, i) => {
+                const card = document.createElement('div');
+                card.className = 'swipe-card';
+                card.style.zIndex = 10 - i;
+                card.dataset.profileId = p.userId;
+                card.innerHTML = `
+          <div class="swipe-card-photo" data-sensitive>
+            ${p.emoji}
+            <div class="swipe-card-overlay"></div>
+            <div class="swipe-like-stamp">LIKE</div>
+            <div class="swipe-nope-stamp">NOPE</div>
+            ${p.healthVerified ? '<div style="position:absolute;top:12px;left:12px;"><span class="badge badge-green">✓ Health</span></div>' : ''}
+          </div>
+          <div class="swipe-card-info">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-family:var(--font-serif);font-size:var(--fs-xl);font-weight:600;">${p.alias}</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-muted);">${p.ageRange[0]} · ${p.city}</div>
+              </div>
+              <div class="stars">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5 - Math.round(p.rating))}</div>
+            </div>
+            <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-sm);line-height:1.5;">${p.bio.slice(0, 80)}…</p>
+            <div style="margin-top:var(--sp-sm);display:flex;gap:4px;flex-wrap:wrap;">
+              ${p.vibeTags.slice(0, 3).map(t => `<span class="chip">${t}</span>`).join('')}
+            </div>
+          </div>
+        `;
+                // Touch/drag events for swipe
+                if (i === 0) addSwipe(card, p);
+                stack.appendChild(card);
+            });
+            document.getElementById('matchCount').textContent = `Showing ${cardQueue.length - currentIdx} companions`;
+        }
+
+        function addSwipe(card, profile) {
+            let startX = 0, isDragging = false;
+            card.addEventListener('mousedown', e => { startX = e.clientX; isDragging = true; });
+            card.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                const diff = e.clientX - startX;
+                card.style.transform = `rotate(${diff * 0.05}deg) translateX(${diff * 0.4}px)`;
+                card.classList.toggle('swiped-right', diff > 50);
+                card.classList.toggle('swiped-left', diff < -50);
+            });
+            card.addEventListener('mouseup', e => {
+                if (!isDragging) return; isDragging = false;
+                const diff = e.clientX - startX;
+                if (diff > 80) doSwipe('right', card, profile);
+                else if (diff < -80) doSwipe('left', card, profile);
+                else { card.style.transform = ''; card.classList.remove('swiped-right', 'swiped-left'); }
+            });
+            card.addEventListener('mouseleave', () => {
+                if (isDragging) { isDragging = false; card.style.transform = ''; card.classList.remove('swiped-right', 'swiped-left'); }
+            });
+            card.addEventListener('click', () => { window.location.href = 'profile.html?id=' + profile.userId; });
+        }
+
+        function swipe(dir) {
+            if (currentIdx >= cardQueue.length) return;
+            const profile = cardQueue[currentIdx];
+            const card = document.querySelector('.swipe-card');
+            if (card) doSwipe(dir, card, profile);
+        }
+
+        function doSwipe(dir, card, profile) {
+            const xDir = dir === 'right' || dir === 'super' ? 1 : -1;
+            card.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+            card.style.transform = `translateX(${xDir * 600}px) rotate(${xDir * 15}deg)`;
+            card.style.opacity = '0';
+
+            if (dir === 'right' || dir === 'super') {
+                likedProfiles.push(profile.userId);
+                // 40% mutual like chance simulation
+                if (Math.random() < 0.4) {
+                    setTimeout(() => showMatch(profile), 600);
+                    return;
+                }
+            }
+            setTimeout(() => { currentIdx++; renderStack(); }, 500);
+        }
+
+        function showMatch(profile) {
+            currentIdx++;
+            document.getElementById('matchEmoji2').textContent = profile.emoji;
+            document.getElementById('matchAlias').textContent = profile.alias;
+            Aurora.openModal('matchModal');
+            renderStack();
+        }
+
+        function goToMessage() { window.location.href = 'messages.html'; }
+        function applyFilters() { Aurora.showToast('Filters applied', 'gold', 1500); buildCards(); }
+
+        document.addEventListener('DOMContentLoaded', () => { buildCards(); });
+    </script>
+</body>
+
+</html>

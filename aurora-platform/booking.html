@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Venue Booking</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        .page-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .venues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--sp-xl);
+        }
+
+        .venue-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .venue-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .venue-image {
+            height: 180px;
+            background: linear-gradient(135deg, var(--plum), var(--aubergine-mid));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .venue-body {
+            padding: var(--sp-lg);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .venue-title {
+            font-family: var(--font-serif);
+            font-size: var(--fs-xl);
+            margin-bottom: var(--sp-xs);
+            color: var(--gold);
+        }
+
+        .venue-meta {
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            margin-bottom: var(--sp-md);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .venue-desc {
+            font-size: var(--fs-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: var(--sp-md);
+            flex: 1;
+        }
+
+        .venue-price {
+            font-size: var(--fs-md);
+            font-weight: 700;
+            color: var(--cream);
+        }
+
+        .booking-modal-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: var(--sp-xl);
+        }
+
+        @media(max-width:768px) {
+            .booking-modal-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .booking-summary {
+            background: rgba(30, 14, 32, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--sp-md);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--sp-sm);
+            font-size: var(--fs-sm);
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--border);
+            padding-top: var(--sp-sm);
+            margin-top: var(--sp-sm);
+            font-weight: 700;
+            font-size: var(--fs-md);
+            color: var(--gold);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora</div>
+        <div class="token-chip"><span class="chip-icon">🪙</span><span data-token-display="experience">50</span> <span
+                style="font-size:10px;margin-left:4px;">EXP</span></div>
+    </div>
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item active"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item"><span class="s-icon">💰</span> Wallet</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+            <div
+                style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:var(--sp-xl);flex-wrap:wrap;gap:var(--sp-md);">
+                <div>
+                    <span class="section-eyebrow">Aurora Safe Venues</span>
+                    <h2 style="font-family:var(--font-serif);">Book a Discreeet Meeting</h2>
+                    <p class="text-muted mt-sm" style="max-width:500px;">All selected venues are Aurora partners,
+                        guaranteeing discretion, private entrances, CCTV security, and panic button integration.</p>
+                </div>
+                <div>
+                    <select class="input-field" style="width:auto;display:inline-block;" id="cityFilter"
+                        onchange="renderVenues()">
+                        <option value="all">All Cities</option>
+                        <option value="Nairobi">Nairobi</option>
+                        <option value="Mombasa">Mombasa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="venues-grid" id="venuesGrid"></div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <!-- Booking Details Modal -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="modal" style="max-width:800px;width:95%;">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Complete Booking</div>
+            <div class="booking-modal-layout">
+                <div>
+                    <div class="input-group">
+                        <label class="input-label">Select Companion</label>
+                        <select class="input-field" id="companionSelect">
+                            <option value="">-- Choose from your matches --</option>
+                            <option value="c001">StormAce</option>
+                            <option value="c002">BlueFlame</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Date</label>
+                        <input type="date" class="input-field" id="bookDate" />
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Duration (Hours)</label>
+                        <select class="input-field" id="bookDuration" onchange="updateSummary()">
+                            <option value="2">2 Hours</option>
+                            <option value="4">4 Hours</option>
+                            <option value="12">Overnight (12h)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Payment Method</label>
+                        <div style="display:flex;gap:var(--sp-sm);flex-wrap:wrap;">
+                            <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="paymethod"
+                                    value="tokens" checked onclick="updateSummary()" /> Experience Tokens</label>
+                            <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="paymethod"
+                                    value="mpesa" onclick="updateSummary()" /> M-Pesa</label>
+                        </div>
+                    </div>
+                    <div class="mt-lg">
+                        <p style="font-size:10px;color:var(--text-muted);"><span style="color:var(--gold);">★</span>
+                            Funds are held in escrow. They will only be released after successful completion of the
+                            meeting. In case of issues, the Aurora admin resolves disputes.</p>
+                    </div>
+                </div>
+
+                <div class="booking-summary">
+                    <h4 style="font-family:var(--font-serif);color:var(--gold);margin-bottom:var(--sp-md);"
+                        id="summaryVenueName">Loading...</h4>
+                    <div class="summary-row"><span>Hourly Rate</span> <span id="summaryRate">KES 0</span></div>
+                    <div class="summary-row"><span>Hours</span> <span id="summaryHours">2</span></div>
+                    <div class="summary-row"><span>Subtotal</span> <span id="summarySub">KES 0</span></div>
+                    <div class="summary-row"><span>Escrow & Plat. Fee</span> <span id="summaryFee">KES 0</span></div>
+                    <div class="summary-row summary-total"><span>Total Escrow</span> <span id="summaryTotal">KES
+                            0</span></div>
+                    <div class="summary-row" style="margin-top:var(--sp-xs);color:var(--text-muted);"><span>Or in
+                            Tokens</span> <span id="summaryTokens">0 EXP</span></div>
+                    <button class="btn btn-primary btn-block btn-lg mt-xl" onclick="submitBooking()">Escrow & Book
+                        Venue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script src="js/aurora-booking.js"></script>
+    <script>
+        let currentVenue = null;
+
+        function renderVenues() {
+            const city = document.getElementById('cityFilter').value;
+            const all = AuroraData.getVenues();
+            const filtered = city === 'all' ? all : all.filter(v => v.city === city);
+            const grid = document.getElementById('venuesGrid');
+            grid.innerHTML = filtered.map(v => `
+        <div class="venue-card" onclick="openBooking('${v.id}')">
+          <div class="venue-image">${v.type === 'Suite' ? '🏨' : v.type === 'Restaurant' ? '🍽️' : '🥂'}</div>
+          <div class="venue-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <h3 class="venue-title">${v.name}</h3>
+              <div class="venue-price">KES ${v.hourlyRate}/h</div>
+            </div>
+            <div class="venue-meta">📍 ${v.city} · ${v.type}</div>
+            <p class="venue-desc">${v.description}</p>
+            <div style="display:flex;gap:6px;">
+              ${v.amenities.slice(0, 2).map(a => `<span class="badge badge-gray">${a}</span>`).join('')}
+              <span class="badge badge-gold">✓ Safe</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        function openBooking(venueId) {
+            currentVenue = AuroraData.getVenue(venueId);
+            document.getElementById('summaryVenueName').textContent = currentVenue.name;
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('bookDate').value = tomorrow.toISOString().split('T')[0];
+
+            updateSummary();
+            Aurora.openModal('bookModal');
+        }
+
+        function updateSummary() {
+            if (!currentVenue) return;
+            const hours = parseInt(document.getElementById('bookDuration').value);
+            const escrow = AuroraBooking.calculateEscrow(currentVenue, hours);
+
+            document.getElementById('summaryRate').textContent = `KES ${currentVenue.hourlyRate.toLocaleString()}`;
+            document.getElementById('summaryHours').textContent = hours;
+            document.getElementById('summarySub').textContent = `KES ${escrow.venueCost.toLocaleString()}`;
+            document.getElementById('summaryFee').textContent = `KES ${Math.round(escrow.platformFee).toLocaleString()}`;
+            document.getElementById('summaryTotal').textContent = `KES ${Math.round(escrow.total).toLocaleString()}`;
+            document.getElementById('summaryTokens').textContent = `${Math.round(escrow.tokenEquivalent)} EXP`;
+        }
+
+        function submitBooking() {
+            const companionSelect = document.getElementById('companionSelect');
+            if (!companionSelect.value) { Aurora.showToast('Please select a companion', 'error'); return; }
+
+            const duration = document.getElementById('bookDuration').value;
+            const date = document.getElementById('bookDate').value;
+            const paymethod = document.querySelector('input[name="paymethod"]:checked').value;
+
+            if (paymethod === 'tokens') {
+                const escrow = AuroraBooking.calculateEscrow(currentVenue, duration);
+                if (AuroraTokens.getExperienceBalance() < escrow.tokenEquivalent) {
+                    Aurora.showToast('Insufficient Experience Tokens.', 'error');
+                    return;
+                }
+            }
+
+            const booking = AuroraBooking.createBooking({
+                clientId: Aurora.getUser()?.userId || 'u001',
+                companionId: companionSelect.value,
+                venueId: currentVenue.id,
+                dateTime: date,
+                durationHours: duration,
+                paymentMethod: paymethod
+            });
+
+            if (booking) {
+                Aurora.closeModal('bookModal');
+                setTimeout(() => window.location.href = 'dashboard.html', 2000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', renderVenues);
+    </script>
+</body>
+
+</html>

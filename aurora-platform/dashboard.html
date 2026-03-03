@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Dashboard</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        .page-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .topbar-token {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-md);
+        }
+
+        .roulette-hero {
+            background: radial-gradient(ellipse at 50% 50%, rgba(109, 59, 92, 0.45) 0%, var(--aubergine-mid) 100%);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-xl);
+            padding: var(--sp-2xl);
+            text-align: center;
+            margin-bottom: var(--sp-xl);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .roulette-hero:hover {
+            transform: scale(1.005);
+        }
+
+        .roulette-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(184, 155, 122, 0.1) 0%, transparent 70%);
+        }
+
+        .roulette-icon {
+            font-size: 4rem;
+            animation: spin-slow 12s linear infinite;
+            display: inline-block;
+            margin-bottom: var(--sp-md);
+        }
+
+        .mini-wheel {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            font-size: 3rem;
+            animation: spin-slow 8s linear infinite;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--sp-lg);
+        }
+
+        .discovery-scroll {
+            display: flex;
+            gap: var(--sp-lg);
+            overflow-x: auto;
+            padding-bottom: var(--sp-md);
+            scroll-snap-type: x mandatory;
+        }
+
+        .discovery-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .discovery-card {
+            flex: 0 0 200px;
+            scroll-snap-align: start;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .discovery-card:hover {
+            transform: scale(1.03);
+        }
+
+        .discovery-card-photo {
+            height: 220px;
+            background: linear-gradient(160deg, var(--plum) 0%, var(--aubergine-mid) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .discovery-card-body {
+            padding: var(--sp-sm) var(--sp-md) var(--sp-md);
+        }
+
+        .discovery-alias {
+            font-family: var(--font-serif);
+            font-size: var(--fs-md);
+            font-weight: 600;
+        }
+
+        .discovery-meta {
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+        }
+
+        .quick-action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-xl);
+        }
+
+        .qa-card {
+            padding: var(--sp-lg) var(--sp-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            display: block;
+        }
+
+        .qa-card:hover {
+            border-color: var(--gold);
+            background: rgba(184, 155, 122, 0.08);
+        }
+
+        .qa-icon {
+            font-size: 1.75rem;
+            margin-bottom: var(--sp-sm);
+        }
+
+        .qa-label {
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-xl);
+        }
+
+        .discreet-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+        }
+
+        .toggle-sw {
+            width: 40px;
+            height: 22px;
+            background: var(--border);
+            border-radius: 11px;
+            position: relative;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .toggle-sw.on {
+            background: var(--gold);
+        }
+
+        .toggle-sw::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: left var(--transition-fast);
+        }
+
+        .toggle-sw.on::after {
+            left: 21px;
+        }
+
+        @media(max-width:600px) {
+            .quick-action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora</div>
+        <div class="topbar-token" style="display:flex;align-items:center;gap:var(--sp-md);">
+            <div class="discreet-toggle" title="Discreet Mode">
+                <div class="toggle-sw" id="discreetToggle" onclick="handleDiscreet()"></div>
+                <span style="font-size:var(--fs-xs);color:var(--text-muted);">Discreet</span>
+            </div>
+            <div class="token-chip" onclick="window.location.href='wallet.html'" style="cursor:pointer;">
+                <span class="chip-icon">🪙</span>
+                <span data-token-display="total">83</span>
+                <span style="font-size:var(--fs-xs);color:var(--text-muted);font-weight:400;">tokens</span>
+            </div>
+            <div class="btn-icon"
+                style="background:var(--bg-secondary);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;"
+                id="notifBtn">🔔</div>
+        </div>
+    </div>
+
+    <!-- Sidebar (desktop) -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item active" data-nav="dashboard"><span class="s-icon">🏠</span>
+            Dashboard</a>
+        <a href="discover.html" class="sidebar-item" data-nav="discover"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item" data-nav="roulette"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item" data-nav="messages"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item" data-nav="booking"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item" data-nav="wallet"><span class="s-icon">💰</span> Wallet</a>
+        <div class="divider"></div>
+        <a href="settings.html" class="sidebar-item" data-nav="settings"><span class="s-icon">⚙️</span> Settings</a>
+        <button class="sidebar-item" data-action="logout"><span class="s-icon">🚪</span> Sign Out</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="with-sidebar">
+        <div class="page-content">
+
+            <!-- Greeting -->
+            <div class="mb-xl">
+                <h2 style="font-family:var(--font-serif);">Good morning, <span id="userAlias"
+                        style="color:var(--gold);">LunaGlow</span> ✨</h2>
+                <p class="text-muted" style="font-size:var(--fs-sm);">Tuesday · 3 March 2026 · Nairobi</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Messages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Booking</div>
+                </div>
+            </div>
+
+            <!-- Token Balance Card -->
+            <div class="card mb-xl"
+                style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-lg);">
+                <div>
+                    <span class="section-eyebrow">Token Balance</span>
+                    <div style="display:flex;gap:var(--sp-xl);flex-wrap:wrap;margin-top:var(--sp-sm);">
+                        <div>
+                            <div style="font-family:var(--font-serif);font-size:var(--fs-3xl);color:var(--gold);font-weight:700;"
+                                data-token-display="connection">83</div>
+                            <div
+                                style="font-size:var(--fs-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;">
+                                Connection Tokens</div>
+                        </div>
+                        <div>
+                            <div style="font-family:var(--font-serif);font-size:var(--fs-3xl);color:var(--blush);font-weight:700;"
+                                data-token-display="experience">50</div>
+                            <div
+                                style="font-size:var(--fs-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;">
+                                Experience Tokens</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="wallet.html" class="btn btn-primary">Buy Tokens</a>
+            </div>
+
+            <!-- Roulette Hero CTA -->
+            <div class="roulette-hero mb-xl" onclick="window.location.href='roulette.html'">
+                <div class="mini-wheel">🎰</div>
+                <h3 style="font-family:var(--font-serif);font-size:var(--fs-2xl);margin-bottom:var(--sp-sm);">Spin for a
+                    Match</h3>
+                <p style="color:var(--text-muted);font-size:var(--fs-sm);max-width:360px;margin:0 auto var(--sp-lg);">
+                    Try Aurora Roulette — wager tokens and spin to be matched with a random verified companion. The
+                    thrill of chance, the safety of verification.</p>
+                <button class="btn btn-primary btn-lg">🎰 Spin the Roulette</button>
+                <div style="margin-top:var(--sp-md);font-size:var(--fs-xs);color:var(--text-muted);">Starting from 5
+                    Connection Tokens</div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-header">
+                <h4 style="font-family:var(--font-serif);">Quick Actions</h4>
+            </div>
+            <div class="quick-action-grid mb-xl">
+                <a href="discover.html" class="qa-card">
+                    <div class="qa-icon">🔍</div>
+                    <div class="qa-label">Discover</div>
+                </a>
+                <a href="messages.html" class="qa-card">
+                    <div class="qa-icon">💬</div>
+                    <div class="qa-label">Messages</div>
+                </a>
+                <a href="booking.html" class="qa-card">
+                    <div class="qa-icon">🏨</div>
+                    <div class="qa-label">Book Venue</div>
+                </a>
+                <a href="settings.html" class="qa-card">
+                    <div class="qa-icon">🛡️</div>
+                    <div class="qa-label">Safety Kit</div>
+                </a>
+            </div>
+
+            <!-- Discovery Feed -->
+            <div class="section-header">
+                <h4 style="font-family:var(--font-serif);">Suggested for You</h4>
+                <a href="discover.html" class="btn btn-ghost btn-sm">See All →</a>
+            </div>
+            <div class="discovery-scroll" id="discoveryFeed"></div>
+
+            <!-- Recent Activity -->
+            <div class="section-header mt-xl">
+                <h4 style="font-family:var(--font-serif);">Recent Activity</h4>
+            </div>
+            <div id="recentActivity" style="display:flex;flex-direction:column;gap:var(--sp-md);"></div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Nav (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item active"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <!-- Panic Button -->
+    <button class="panic-btn" title="Emergency — tap to alert contacts">🆘</button>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update alias
+            const user = Aurora.getUser();
+            if (user) document.getElementById('userAlias').textContent = user.alias || 'LunaGlow';
+
+            // Discreet toggle state
+            const toggleEl = document.getElementById('discreetToggle');
+            if (Aurora.isDiscreet()) toggleEl.classList.add('on');
+
+            // Build discovery feed
+            const feed = document.getElementById('discoveryFeed');
+            const companions = AuroraData.getCompanions().slice(0, 8);
+            companions.forEach(p => {
+                feed.innerHTML += `
+          <a href="profile.html?id=${p.userId}" class="discovery-card" style="text-decoration:none;">
+            <div class="discovery-card-photo" data-sensitive>${p.emoji}
+              ${p.healthVerified ? '<div style="position:absolute;top:8px;right:8px;"><span class="badge badge-green" style="font-size:9px;">✓ Health</span></div>' : ''}
+            </div>
+            <div class="discovery-card-body">
+              <div class="discovery-alias">${p.alias}</div>
+              <div class="discovery-meta">${p.city} · ${p.ageRange[0]}</div>
+              <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
+                ${p.vibeTags.slice(0, 2).map(t => `<span class="chip" style="font-size:10px;padding:2px 8px;">${t}</span>`).join('')}
+              </div>
+            </div>
+          </a>`;
+            });
+
+            // Recent activity
+            const activities = [
+                { icon: '💬', text: 'BlueFlame sent you a message request', time: '8m ago', action: 'Accept', actionClass: 'btn-primary' },
+                { icon: '🎰', text: 'Roulette match with EbonyEdge — pending response', time: '2h ago', action: 'Respond', actionClass: 'btn-secondary' },
+                { icon: '🏨', text: 'Your booking at Aurora Suite — Westlands confirmed', time: 'Yesterday', action: 'View', actionClass: 'btn-ghost' },
+            ];
+            const actEl = document.getElementById('recentActivity');
+            activities.forEach(a => {
+                actEl.innerHTML += `
+          <div class="card card-sm" style="display:flex;align-items:center;gap:var(--sp-md);flex-wrap:wrap;">
+            <div style="font-size:1.5rem;">${a.icon}</div>
+            <div style="flex:1;">
+              <div style="font-size:var(--fs-sm);font-weight:600;">${a.text}</div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted);">${a.time}</div>
+            </div>
+            <button class="btn ${a.actionClass} btn-sm">${a.action}</button>
+          </div>`;
+            });
+        });
+
+        function handleDiscreet() {
+            const isNow = Aurora.toggleDiscreet();
+            document.getElementById('discreetToggle').classList.toggle('on', isNow);
+        }
+    </script>
+</body>
+
+</html>

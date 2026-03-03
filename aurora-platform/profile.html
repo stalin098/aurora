@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Profile View</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .profile-hero {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--sp-2xl);
+            align-items: start;
+        }
+
+        .avatar-section {
+            text-align: center;
+        }
+
+        .avatar-main {
+            width: 220px;
+            height: 220px;
+            border-radius: var(--radius-xl);
+            background: linear-gradient(160deg, var(--plum) 0%, var(--aubergine-mid) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            border: 2px solid var(--border);
+            margin: 0 auto var(--sp-lg);
+            position: relative;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 16px;
+            height: 16px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--aubergine);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-md);
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            margin-bottom: var(--sp-lg);
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--sp-sm);
+            margin-top: var(--sp-xl);
+        }
+
+        .gallery-thumb {
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            background: linear-gradient(160deg, var(--plum) 0%, var(--aubergine-mid) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform var(--transition-fast);
+            border: 1px solid var(--border);
+        }
+
+        .gallery-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-locked {
+            position: absolute;
+            inset: 0;
+            background: rgba(30, 10, 32, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .gallery-locked-icon {
+            font-size: 1.5rem;
+        }
+
+        .gallery-locked-cost {
+            font-size: var(--fs-xs);
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .info-block {
+            margin-bottom: var(--sp-lg);
+        }
+
+        .info-label {
+            font-size: var(--fs-xs);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: var(--sp-sm);
+        }
+
+        .info-value {
+            font-size: var(--fs-md);
+            color: var(--cream);
+        }
+
+        .action-row {
+            display: flex;
+            gap: var(--sp-md);
+            flex-wrap: wrap;
+            margin-bottom: var(--sp-xl);
+        }
+
+        .bio-text {
+            font-family: var(--font-serif);
+            font-size: var(--fs-lg);
+            line-height: 1.75;
+            color: var(--cream);
+            font-style: italic;
+            margin-bottom: var(--sp-xl);
+        }
+
+        @media(max-width:640px) {
+            .profile-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .avatar-section {}
+
+            .photo-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-lg);
+            margin-bottom: var(--sp-md);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:var(--sp-md);">
+            <a href="discover.html" class="btn btn-ghost btn-sm">←</a>
+            <div class="topbar-logo" style="font-size:var(--fs-xl);">Profile</div>
+        </div>
+        <div class="token-chip"><span class="chip-icon">🪙</span><span data-token-display="total">83</span></div>
+    </div>
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item"><span class="s-icon">💰</span> Wallet</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+            <!-- Hero -->
+            <div class="profile-hero">
+                <div class="avatar-section">
+                    <div class="avatar-main" id="profileAvatar">
+                        <span id="profileEmoji">👨🏾</span>
+                        <div class="online-dot"></div>
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-block" id="msgBtn" onclick="requestMessage()">
+                            💬 Request Message <span class="badge badge-gray" style="margin-left:4px;">2 🪙</span>
+                        </button>
+                        <a href="booking.html" class="btn btn-secondary btn-block">🏨 Book a Meeting</a>
+                        <div style="display:flex;gap:var(--sp-sm);">
+                            <button class="btn btn-ghost btn-sm" style="flex:1;"
+                                onclick="Aurora.showToast('Profile reported', 'gold')">🚩 Report</button>
+                            <button class="btn btn-ghost btn-sm" style="flex:1;"
+                                onclick="Aurora.showToast('User blocked', 'error')">🚫 Block</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div>
+                    <div
+                        style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-sm);margin-bottom:var(--sp-md);">
+                        <div>
+                            <h2 style="font-family:var(--font-serif);font-size:var(--fs-3xl);margin-bottom:4px;"
+                                id="profileAlias">StormAce</h2>
+                            <div style="font-size:var(--fs-sm);color:var(--text-muted);" id="profileMeta">27 · Nairobi
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--sp-sm);">
+                            <span class="badge badge-green" id="verifiedBadge">✓ ID Verified</span>
+                            <span class="badge badge-gold" id="healthBadge" style="display:none;">💚 Health
+                                Verified</span>
+                        </div>
+                    </div>
+
+                    <div class="rating-row">
+                        <div class="stars" id="profileStars">★★★★★</div>
+                        <span style="font-size:var(--fs-sm);color:var(--text-muted);" id="profileRating">4.9 (23
+                            reviews)</span>
+                    </div>
+
+                    <p class="bio-text" id="profileBio">
+                        "Fitness trainer. Disciplined, attentive, and respectful. I believe a woman deserves to feel
+                        like a goddess."
+                    </p>
+
+                    <div class="info-block">
+                        <div class="info-label">Meeting Types</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="meetingTypes">
+                            <span class="chip active">Dinner Date</span>
+                            <span class="chip active">Outing</span>
+                            <span class="chip active">Private</span>
+                        </div>
+                    </div>
+
+                    <div class="info-block">
+                        <div class="info-label">Vibe Tags</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="vibeTags">
+                            <span class="chip">Fitness</span>
+                            <span class="chip">Cooking</span>
+                            <span class="chip">Nature</span>
+                            <span class="chip">Photography</span>
+                        </div>
+                    </div>
+
+                    <div class="info-block" style="display:flex;gap:var(--sp-2xl);flex-wrap:wrap;">
+                        <div>
+                            <div class="info-label">Member Since</div>
+                            <div class="info-value" id="memberSince">June 2025</div>
+                        </div>
+                        <div>
+                            <div class="info-label">City</div>
+                            <div class="info-value" id="profileCity">Nairobi</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Bookings</div>
+                            <div class="info-value" id="bookingCount">23</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photo Gallery -->
+            <div class="mt-xl">
+                <div class="section-header">
+                    <h4 style="font-family:var(--font-serif);">Gallery</h4>
+                    <button class="btn btn-secondary btn-sm" onclick="unlockGallery()">🔓 Unlock All (10
+                        tokens)</button>
+                </div>
+                <div class="photo-gallery" id="photoGallery"></div>
+            </div>
+
+            <!-- Reviews -->
+            <div class="mt-xl">
+                <h4 style="font-family:var(--font-serif);margin-bottom:var(--sp-lg);">Member Reviews</h4>
+                <div id="reviewList">
+                    <div class="review-card">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-sm);">
+                            <div style="font-weight:700;font-size:var(--fs-sm);">LunaGlow</div>
+                            <div style="display:flex;gap:4px;align-items:center;"><span
+                                    style="color:var(--gold);">★★★★★</span><span
+                                    style="font-size:var(--fs-xs);color:var(--text-muted);">Jan 2026</span></div>
+                        </div>
+                        <p style="font-size:var(--fs-sm);color:var(--text-muted);font-style:italic;">"Absolute
+                            gentleman. Punctual, attentive, and genuinely engaging. Aurora Westlands suite was magical."
+                        </p>
+                    </div>
+                    <div class="review-card">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-sm);">
+                            <div style="font-weight:700;font-size:var(--fs-sm);">OnyxQueen</div>
+                            <div style="display:flex;gap:4px;align-items:center;"><span
+                                    style="color:var(--gold);">★★★★★</span><span
+                                    style="font-size:var(--fs-xs);color:var(--text-muted);">Dec 2025</span></div>
+                        </div>
+                        <p style="font-size:var(--fs-sm);color:var(--text-muted);font-style:italic;">"Exceeded every
+                            expectation. Would book again without hesitation."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Unlock Gallery Modal -->
+    <div class="modal-overlay" id="unlockModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Unlock Gallery</div>
+            <div style="text-align:center;">
+                <p class="text-muted mb-xl" style="font-size:var(--fs-sm);">Unlock all photos for <strong
+                        id="profileAliasModal">StormAce</strong> for <strong style="color:var(--gold);">10 Connection
+                        Tokens</strong>. Gallery access is permanent.</p>
+                <div class="token-chip large" style="justify-content:center;margin-bottom:var(--sp-xl);">
+                    <span class="chip-icon">🪙</span>
+                    <span data-token-display="connection">83</span>
+                    <span style="font-size:var(--fs-sm);color:var(--text-muted);font-weight:400;">available</span>
+                </div>
+                <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-lg" onclick="confirmUnlock()">Unlock for 10 tokens</button>
+                    <button class="btn btn-ghost" data-close-modal="unlockModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal-overlay" id="msgModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Request Message</div>
+            <p class="text-muted" style="text-align:center;margin-bottom:var(--sp-xl);font-size:var(--fs-sm);">Sending a
+                message request to <strong id="msgAlias">StormAce</strong> costs <strong style="color:var(--gold);">2
+                    Connection Tokens</strong>. They must accept before you can chat.</p>
+            <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-lg" onclick="confirmMessage()">Send Request (2 🪙)</button>
+                <button class="btn btn-ghost" data-close-modal="msgModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item active"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <script src="js/aurora-core.js"></script>
+    <script src="js/aurora-data.js"></script>
+    <script src="js/aurora-tokens.js"></script>
+    <script>
+        const photoEmojis = ['💪', '🌿', '📷', '😎', '🏃', '🌅', '🤝', '🎯'];
+        let galleryUnlocked = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const profileId = params.get('id') || 'm001';
+            const profile = AuroraData.getProfile(profileId) || AuroraData.getCompanions()[0];
+            if (!profile) return;
+
+            // Populate
+            document.getElementById('profileEmoji').textContent = profile.emoji;
+            document.getElementById('profileAlias').textContent = profile.alias;
+            document.getElementById('profileAliasModal').textContent = profile.alias;
+            document.getElementById('msgAlias').textContent = profile.alias;
+            document.getElementById('profileMeta').textContent = profile.ageRange[0] + ' · ' + profile.city;
+            document.getElementById('profileBio').textContent = '"' + profile.bio + '"';
+            document.getElementById('profileCity').textContent = profile.city;
+            document.getElementById('bookingCount').textContent = profile.reviewCount;
+            document.getElementById('profileRating').textContent = profile.rating + ' (' + profile.reviewCount + ' reviews)';
+            if (profile.healthVerified) document.getElementById('healthBadge').style.display = 'inline-flex';
+
+            // Stars
+            const stars = Math.round(profile.rating);
+            document.getElementById('profileStars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+
+            // Meeting types
+            const mt = document.getElementById('meetingTypes');
+            mt.innerHTML = profile.meetingTypes.map(t => `<span class="chip active">${t.charAt(0).toUpperCase() + t.slice(1)}</span>`).join('');
+
+            // Vibe tags
+            const vt = document.getElementById('vibeTags');
+            vt.innerHTML = profile.vibeTags.map(t => `<span class="chip">${t}</span>`).join('');
+
+            // Gallery
+            buildGallery(profile);
+        });
+
+        function buildGallery(profile) {
+            const gallery = document.getElementById('photoGallery');
+            gallery.innerHTML = '';
+            photoEmojis.slice(0, 8).forEach((e, i) => {
+                const isPublic = i < (profile.publicPhotos || 2);
+                const isNSFW = i >= 4;
+                const thumb = document.createElement('div');
+                thumb.className = 'gallery-thumb';
+                thumb.innerHTML = `<span>${e}</span>`;
+                if (!isPublic && !galleryUnlocked) {
+                    const lock = document.createElement('div');
+                    lock.className = 'gallery-locked';
+                    lock.innerHTML = `<div class="gallery-locked-icon">${isNSFW ? '🔥' : '🔒'}</div><div class="gallery-locked-cost">10 🪙</div>`;
+                    thumb.appendChild(lock);
+                }
+                thumb.onclick = () => {
+                    if (!isPublic && !galleryUnlocked) unlockGallery();
+                    else Aurora.showToast('Gallery photo — full viewer coming soon', 'gold');
+                };
+                gallery.appendChild(thumb);
+            });
+        }
+
+        function unlockGallery() { Aurora.openModal('unlockModal'); }
+        function confirmUnlock() {
+            if (AuroraTokens.spendConnection(10, 'Gallery unlock')) {
+                galleryUnlocked = true;
+                Aurora.closeModal('unlockModal');
+                const profile = AuroraData.getCompanions()[0];
+                buildGallery(profile);
+                Aurora.showToast('🔓 Gallery unlocked!', 'success');
+            }
+        }
+        function requestMessage() { Aurora.openModal('msgModal'); }
+        function confirmMessage() {
+            if (AuroraTokens.spendConnection(2, 'Message request')) {
+                Aurora.closeModal('msgModal');
+                Aurora.showToast('Message request sent! Redirecting…', 'success', 2500);
+                setTimeout(() => window.location.href = 'messages.html', 2500);
+            }
+        }
+    </script>
+</body>
+
+</html>

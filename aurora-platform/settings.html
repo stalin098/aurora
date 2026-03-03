@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Settings</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--sp-xl) var(--sp-lg) 100px;
+        }
+
+        .settings-group {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--sp-xl);
+            margin-bottom: var(--sp-lg);
+        }
+
+        .group-title {
+            font-family: var(--font-serif);
+            font-size: var(--fs-xl);
+            color: var(--gold);
+            margin-bottom: var(--sp-md);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: var(--sp-sm);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-md) 0;
+            border-bottom: 1px solid rgba(184, 155, 122, 0.1);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .setting-label {
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            color: var(--cream);
+            margin-bottom: 4px;
+        }
+
+        .setting-desc {
+            font-size: var(--fs-xs);
+            color: var(--text-muted);
+            max-width: 400px;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--cream);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--gold);
+            border-color: var(--gold);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+            background-color: var(--aubergine);
+        }
+
+        .danger-zone {
+            background: rgba(220, 53, 69, 0.05);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .danger-title {
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-logo">✦ Aurora Settings</div>
+    </div>
+    <nav class="sidebar">
+        <div class="sidebar-logo">✦ Aurora</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="s-icon">🏠</span> Dashboard</a>
+        <a href="discover.html" class="sidebar-item"><span class="s-icon">🔍</span> Discover</a>
+        <a href="roulette.html" class="sidebar-item"><span class="s-icon">🎰</span> Roulette</a>
+        <a href="messages.html" class="sidebar-item"><span class="s-icon">💬</span> Messages</a>
+        <a href="booking.html" class="sidebar-item"><span class="s-icon">🏨</span> Venues</a>
+        <a href="wallet.html" class="sidebar-item"><span class="s-icon">💰</span> Wallet</a>
+        <div class="divider"></div>
+        <a href="settings.html" class="sidebar-item active"><span class="s-icon">⚙️</span> Settings</a>
+    </nav>
+
+    <main class="with-sidebar">
+        <div class="page-content">
+
+            <!-- Privacy & Discretion -->
+            <div class="settings-group">
+                <h3 class="group-title">Privacy & Discretion</h3>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Discreet Mode</div>
+                        <div class="setting-desc">Blurs images globally and changes app icon styling. Use quick-toggle
+                            in topbar too.</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" id="setDiscreet"
+                            onchange="toggleDiscreet(this.checked)" /><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Hide Profile from Discovery</div>
+                        <div class="setting-desc">You are only visible to matches and people you explicitly message.
+                        </div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked /><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Hide Online Status</div>
+                        <div class="setting-desc">Your online indicator will be hidden. You won't see others.</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" /><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <!-- Account & Security -->
+            <div class="settings-group">
+                <h3 class="group-title">Security & Safety</h3>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Biometric App Lock</div>
+                        <div class="setting-desc">Require Face ID / Fingerprint to open Aurora.</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" /><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Emergency Panic Contacts</div>
+                        <div class="setting-desc">Edit your 3 trusted contacts triggered by the Panic SOS button.</div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm"
+                        onclick="Aurora.showToast('Contact editor modal opened', 'gold')">Edit</button>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Data Privacy Request</div>
+                        <div class="setting-desc">Download a copy of your decrypted platform data per Kenya DPA laws.
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm"
+                        onclick="Aurora.showToast('Data archive requested. Email sent.', 'success')">Request
+                        Data</button>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-group danger-zone">
+                <h3 class="group-title danger-title">Danger Zone</h3>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Delete Account</div>
+                        <div class="setting-desc">Permanently erase all personal data, matches, and ID encrypted blobs.
+                            Unused tokens are forfeited.</div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);"
+                        onclick="confirmDelete()">Delete Account</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><span class="nav-icon">🏠</span>Home</a>
+        <a href="discover.html" class="bottom-nav-item"><span class="nav-icon">🔍</span>Discover</a>
+        <a href="roulette.html" class="bottom-nav-item"><span class="nav-icon">🎰</span>Roulette</a>
+        <a href="messages.html" class="bottom-nav-item"><span class="nav-icon">💬</span>Messages</a>
+        <a href="wallet.html" class="bottom-nav-item"><span class="nav-icon">💰</span>Wallet</a>
+    </nav>
+
+    <script src="js/aurora-core.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('setDiscreet').checked = Aurora.isDiscreet();
+        });
+
+        function toggleDiscreet(val) {
+            if (val !== Aurora.isDiscreet()) Aurora.toggleDiscreet();
+        }
+
+        function confirmDelete() {
+            if (confirm('Are you absolutely sure? This action is irreversible.')) {
+                Aurora.logout(); // Will redirect
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aurora — Join the Platform</title>
+    <link rel="stylesheet" href="css/aurora.css" />
+    <style>
+        body {
+            background: radial-gradient(ellipse at 20% 20%, var(--plum-dark) 0%, var(--aubergine) 60%);
+            min-height: 100vh;
+        }
+
+        .onboard-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--sp-xl) var(--sp-lg);
+        }
+
+        .onboard-logo {
+            font-family: var(--font-serif);
+            font-size: var(--fs-2xl);
+            background: linear-gradient(135deg, var(--gold), var(--blush));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--sp-xl);
+        }
+
+        .onboard-box {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(44, 26, 46, 0.92);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--sp-2xl);
+            backdrop-filter: blur(30px);
+        }
+
+        .step-section {
+            display: none;
+        }
+
+        .step-section.active {
+            display: block;
+            animation: fadeInUp 0.4s ease both;
+        }
+
+        .step-title {
+            font-family: var(--font-serif);
+            font-size: var(--fs-2xl);
+            margin-bottom: var(--sp-sm);
+        }
+
+        .step-desc {
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            margin-bottom: var(--sp-xl);
+        }
+
+        .otp-input {
+            display: flex;
+            gap: var(--sp-sm);
+            justify-content: center;
+        }
+
+        .otp-digit {
+            width: 52px;
+            height: 60px;
+            text-align: center;
+            font-size: var(--fs-2xl);
+            font-family: var(--font-serif);
+            background: rgba(44, 26, 46, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--cream);
+        }
+
+        .otp-digit:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(184, 155, 122, 0.2);
+        }
+
+        .photo-upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-2xl) var(--sp-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color var(--transition-fast), background var(--transition-fast);
+        }
+
+        .photo-upload-zone:hover {
+            border-color: var(--gold);
+            background: rgba(184, 155, 122, 0.05);
+        }
+
+        .photo-uploaded-bar {
+            display: flex;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-md);
+            flex-wrap: wrap;
+        }
+
+        .photo-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .nsfw-tag {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            background: var(--plum);
+            border-radius: 4px;
+            font-size: 9px;
+            padding: 1px 4px;
+            color: var(--cream);
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--sp-lg);
+        }
+
+        .role-card {
+            padding: var(--sp-xl);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .role-card:hover,
+        .role-card.selected {
+            border-color: var(--gold);
+            background: rgba(184, 155, 122, 0.1);
+        }
+
+        .role-emoji {
+            font-size: 2.5rem;
+            margin-bottom: var(--sp-sm);
+        }
+
+        .vibe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--sp-sm);
+        }
+
+        .vibe-option {
+            padding: var(--sp-md);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            transition: all var(--transition-fast);
+        }
+
+        .vibe-option:hover,
+        .vibe-option.selected {
+            border-color: var(--gold);
+            background: rgba(184, 155, 122, 0.1);
+            color: var(--gold);
+        }
+
+        .success-state {
+            text-align: center;
+            padding: var(--sp-2xl) 0;
+        }
+
+        .success-ring {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(107, 175, 122, 0.15);
+            border: 2px solid var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto var(--sp-xl);
+            animation: pulse-ring 2s ease infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="onboard-wrap">
+        <div class="onboard-logo">✦ Aurora</div>
+
+        <!-- Progress -->
+        <div class="step-progress" id="stepProgress"></div>
+
+        <div class="onboard-box">
+
+            <!-- Step 1: Phone OTP -->
+            <div class="step-section active" id="step1">
+                <h2 class="step-title">Verify Your Phone</h2>
+                <p class="step-desc">We'll send a one-time code to your Safaricom or Airtel number. Your number is never
+                    shared.</p>
+                <div class="input-group">
+                    <label class="input-label">Kenyan Mobile Number</label>
+                    <input type="tel" id="phoneInput" class="input-field" placeholder="+254 7XX XXX XXX"
+                        maxlength="13" />
+                </div>
+                <button class="btn btn-primary btn-block btn-lg" onclick="sendOTP()">Send Code</button>
+                <div id="otpSection" style="display:none;margin-top:var(--sp-xl);">
+                    <p class="text-muted" style="text-align:center;margin-bottom:var(--sp-lg);font-size:var(--fs-sm);">
+                        Enter the 6-digit code sent to your phone</p>
+                    <div class="otp-input" id="otpInput">
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" />
+                    </div>
+                    <button class="btn btn-primary btn-block btn-lg mt-lg" onclick="verifyOTP()">Verify Code</button>
+                </div>
+            </div>
+
+            <!-- Step 2: ID Upload -->
+            <div class="step-section" id="step2">
+                <h2 class="step-title">Identity Verification</h2>
+                <p class="step-desc">Upload a clear photo of your government ID (Kenyan National ID or Passport). Your
+                    real identity is encrypted and never shown to other users.</p>
+                <div class="photo-upload-zone" onclick="simulateIDUpload()">
+                    <div id="idUploadIcon" style="font-size:2.5rem;margin-bottom:var(--sp-md);">📄</div>
+                    <div id="idUploadText">
+                        <p style="font-weight:700;margin-bottom:4px;">Tap to Upload ID</p>
+                        <p class="text-muted" style="font-size:var(--fs-xs);">National ID or Passport · JPG, PNG up to
+                            10MB</p>
+                    </div>
+                </div>
+                <div class="badge badge-gold mt-lg" style="display:flex;gap:6px;align-items:center;">
+                    <span>🔒</span> Your ID is encrypted using AES-256. Only used for age verification. Never displayed.
+                </div>
+                <button class="btn btn-primary btn-block btn-lg mt-xl" onclick="nextStep()">Continue</button>
+            </div>
+
+            <!-- Step 3: Real Info -->
+            <div class="step-section" id="step3">
+                <h2 class="step-title">Your Private Details</h2>
+                <p class="step-desc">Stored encrypted. Never shown to other members. Used only for legal compliance and
+                    emergency contact.</p>
+                <div class="input-group">
+                    <label class="input-label">Full Name (as on ID)</label>
+                    <input type="text" class="input-field" placeholder="e.g. Jane Amara Wanjiru" />
+                </div>
+                <div class="input-group">
+                    <label class="input-label">City of Residence</label>
+                    <select class="input-field">
+                        <option value="">Select city</option>
+                        <option>Nairobi</option>
+                        <option>Mombasa</option>
+                        <option>Kisumu</option>
+                        <option>Nakuru</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Date of Birth</label>
+                    <input type="date" class="input-field" id="dobInput" />
+                </div>
+                <button class="btn btn-primary btn-block btn-lg" onclick="nextStep()">Continue</button>
+            </div>
+
+            <!-- Step 4: Choose Alias -->
+            <div class="step-section" id="step4">
+                <h2 class="step-title">Choose Your Aurora Alias</h2>
+                <p class="step-desc">This is your permanent identity on Aurora. Choose carefully — aliases cannot be
+                    changed after signup.</p>
+                <div class="input-group">
+                    <label class="input-label">Your Alias</label>
+                    <div style="position:relative;">
+                        <input type="text" class="input-field" id="aliasInput" placeholder="e.g. LunaGlow"
+                            maxlength="24" oninput="checkAlias()" />
+                        <span id="aliasStatus"
+                            style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:1.1rem;"></span>
+                    </div>
+                </div>
+                <div class="badge badge-gray">✦ No real name words · 3–24 characters · Letters &amp; numbers only</div>
+                <div id="aliasSuggestions" class="mt-md" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+                <button class="btn btn-primary btn-block btn-lg mt-xl" onclick="nextStep()">Claim My Alias</button>
+            </div>
+
+            <!-- Step 5: Photos -->
+            <div class="step-section" id="step5">
+                <h2 class="step-title">Upload Your Photos</h2>
+                <p class="step-desc">Minimum 4 recent photos (within last 3 months). Must include clear face and full
+                    body shots. You can mark some as NSFW — they'll be blurred for others until unlocked.</p>
+                <div class="photo-upload-zone" onclick="simulatePhotoUpload()">
+                    <div style="font-size:2.5rem;margin-bottom:var(--sp-md);">📸</div>
+                    <p style="font-weight:700;margin-bottom:4px;">Add Photos</p>
+                    <p class="text-muted" style="font-size:var(--fs-xs);">Tap to select · JPG, PNG · Max 20MB each</p>
+                </div>
+                <div class="photo-uploaded-bar" id="photoBar"></div>
+                <p class="text-muted mt-md" id="photoCount" style="font-size:var(--fs-xs);">0 / 4 required</p>
+                <button class="btn btn-primary btn-block btn-lg mt-xl" id="photoNextBtn"
+                    onclick="nextStep()">Continue</button>
+            </div>
+
+            <!-- Step 6: Health -->
+            <div class="step-section" id="step6">
+                <h2 class="step-title">Health Disclosure</h2>
+                <p class="step-desc">Optional but earns you a "Verified Health ✓" badge — increasing trust with matches.
+                    Upload a recent (within 6 months) sexual health certificate.</p>
+                <div class="photo-upload-zone mt-md" onclick="simulateHealthUpload()">
+                    <div id="healthIcon" style="font-size:2rem;margin-bottom:var(--sp-sm);">🏥</div>
+                    <p style="font-weight:600;margin-bottom:4px;">Upload Health Certificate</p>
+                    <p class="text-muted" style="font-size:var(--fs-xs);">Optional · Reviewed by Aurora medical team ·
+                        Encrypted</p>
+                </div>
+                <div id="healthBadge" style="display:none;" class="mt-lg">
+                    <span class="badge badge-green">✓ Health Certificate Uploaded — Pending Review</span>
+                </div>
+                <div class="divider-with-text">OR</div>
+                <button class="btn btn-secondary btn-block" onclick="nextStep()">Skip for Now</button>
+                <button class="btn btn-primary btn-block mt-md" onclick="nextStep()">Continue with Certificate</button>
+            </div>
+
+            <!-- Step 7: Role -->
+            <div class="step-section" id="step7">
+                <h2 class="step-title">Choose Your Role</h2>
+                <p class="step-desc">Select how you want to participate on Aurora. You can only have one role.</p>
+                <div class="role-cards" id="roleCards">
+                    <div class="role-card" onclick="selectRole('client', this)">
+                        <div class="role-emoji">👩🏾</div>
+                        <h4 style="font-family:var(--font-serif);">Client</h4>
+                        <p class="text-muted mt-sm" style="font-size:var(--fs-xs);">Women 35+ seeking companionship.
+                            Browse, message, and book meetings.</p>
+                    </div>
+                    <div class="role-card" onclick="selectRole('companion', this)">
+                        <div class="role-emoji">👨🏾</div>
+                        <h4 style="font-family:var(--font-serif);">Companion</h4>
+                        <p class="text-muted mt-sm" style="font-size:var(--fs-xs);">Men 21–35 providing companionship.
+                            Receive booking requests and earnings.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block btn-lg mt-xl" id="roleNextBtn" onclick="nextStep()"
+                    disabled>Continue</button>
+            </div>
+
+            <!-- Step 8: Preferences -->
+            <div class="step-section" id="step8">
+                <h2 class="step-title">Set Your Preferences</h2>
+                <p class="step-desc">These refine your match results. You can update preferences in Settings later.</p>
+                <div class="input-group">
+                    <label class="input-label">Age Range of Partners</label>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-sm);">
+                        <input type="number" class="input-field" placeholder="Min age e.g. 21" id="ageMin" min="21"
+                            max="60" />
+                        <input type="number" class="input-field" placeholder="Max age e.g. 35" id="ageMax" min="21"
+                            max="60" />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Preferred Meeting Type</label>
+                    <div style="display:flex;gap:var(--sp-sm);flex-wrap:wrap;" id="meetingTypes">
+                        <div class="chip" onclick="this.classList.toggle('active')">Dinner Date</div>
+                        <div class="chip" onclick="this.classList.toggle('active')">Outing</div>
+                        <div class="chip" onclick="this.classList.toggle('active')">Private Meeting</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Vibe Tags (Select all that apply)</label>
+                    <div class="vibe-grid" id="vibePicker">
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">🍷 Wine &amp; Dine</div>
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">🎷 Jazz &amp; Arts</div>
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">🌊 Beach &amp; Travel</div>
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">📚 Intellectual</div>
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">💪 Fitness</div>
+                        <div class="vibe-option" onclick="this.classList.toggle('selected')">🌿 Nature</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block btn-lg" onclick="completeOnboarding()">Complete &amp; Enter
+                    Aurora ✨</button>
+            </div>
+
+            <!-- Done -->
+            <div class="step-section" id="stepDone">
+                <div class="success-state">
+                    <div class="success-ring">✨</div>
+                    <h2 class="step-title">Welcome to Aurora</h2>
+                    <p class="step-desc">Your alias is set. ID verification is in progress (usually 2–4 hours). In the
+                        meantime, explore the platform!</p>
+                    <div id="userAliasDisplay" class="token-chip large mt-lg" style="justify-content:center;">Loading...
+                    </div>
+                    <div class="mt-xl" style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+                        <a href="dashboard.html" class="btn btn-primary btn-lg">Enter My Dashboard</a>
+                        <a href="wallet.html" class="btn btn-secondary">Buy Tokens</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/aurora-core.js"></script>
+    <script>
+        let currentStep = 1;
+        const TOTAL_STEPS = 8;
+        let selectedRole = null;
+        let uploadedPhotos = 0;
+        let chosenAlias = '';
+
+        function buildProgress() {
+            const prog = document.getElementById('stepProgress');
+            if (currentStep > TOTAL_STEPS) return;
+            prog.innerHTML = '';
+            for (let i = 1; i <= TOTAL_STEPS; i++) {
+                if (i > 1) { const l = document.createElement('div'); l.className = 'step-line' + (i - 1 <= currentStep - 1 ? ' complete' : ''); prog.appendChild(l); }
+                const d = document.createElement('div');
+                d.className = 'step-dot' + (i === currentStep ? ' active' : i < currentStep ? ' complete' : '');
+                prog.appendChild(d);
+            }
+        }
+
+        function nextStep() {
+            document.getElementById('step' + (currentStep === TOTAL_STEPS ? 'Done' : currentStep)).classList.remove('active');
+            currentStep++;
+            const next = document.getElementById(currentStep > TOTAL_STEPS ? 'stepDone' : 'step' + currentStep);
+            if (next) next.classList.add('active');
+            buildProgress();
+            if (currentStep > TOTAL_STEPS) { finishDone(); }
+        }
+
+        function sendOTP() {
+            const phone = document.getElementById('phoneInput').value;
+            if (phone.length < 10) { Aurora.showToast('Please enter a valid phone number', 'error'); return; }
+            Aurora.showToast('📱 OTP sent to ' + phone, 'success', 4000);
+            document.getElementById('otpSection').style.display = 'block';
+            // Wire OTP digit auto-advance
+            document.querySelectorAll('.otp-digit').forEach((d, i, arr) => {
+                d.addEventListener('input', () => { if (d.value && arr[i + 1]) arr[i + 1].focus(); });
+            });
+        }
+        function verifyOTP() {
+            const digits = [...document.querySelectorAll('.otp-digit')].map(d => d.value).join('');
+            if (digits.length < 6) { Aurora.showToast('Enter all 6 digits', 'error'); return; }
+            Aurora.showToast('📱 Phone verified!', 'success', 2000);
+            setTimeout(() => nextStep(), 700);
+        }
+
+        function simulateIDUpload() {
+            document.getElementById('idUploadIcon').textContent = '✅';
+            document.getElementById('idUploadText').innerHTML = '<p style="font-weight:700;color:var(--success);">ID Uploaded — Pending Verification</p><p class="text-muted" style="font-size:var(--fs-xs);">Encrypted and stored securely</p>';
+            Aurora.showToast('ID uploaded. Our team will review within 4 hours.', 'gold', 4000);
+        }
+
+        let aliasTimer = null;
+        const taken = ['LunaGlow', 'SilkRose', 'OnyxQueen', 'VelvetDusk', 'StormAce', 'BlueFlame'];
+        const suggestions = ['CoralNight', 'AmberSky', 'JadeFire', 'GoldPulse', 'RubyDusk', 'SilverMist'];
+        function checkAlias() {
+            clearTimeout(aliasTimer);
+            aliasTimer = setTimeout(() => {
+                const val = document.getElementById('aliasInput').value.trim();
+                const statusEl = document.getElementById('aliasStatus');
+                const sugEl = document.getElementById('aliasSuggestions');
+                if (val.length < 3) { statusEl.textContent = ''; return; }
+                if (taken.includes(val)) {
+                    statusEl.textContent = '✕'; statusEl.style.color = 'var(--danger)';
+                    sugEl.innerHTML = '<p style="font-size:var(--fs-xs);color:var(--text-muted)">Suggestions:</p>';
+                    suggestions.slice(0, 3).forEach(s => {
+                        sugEl.innerHTML += `<span class="chip" onclick="document.getElementById('aliasInput').value='${s}';checkAlias();">${s}</span>`;
+                    });
+                } else {
+                    statusEl.textContent = '✓'; statusEl.style.color = 'var(--success)';
+                    sugEl.innerHTML = '';
+                    chosenAlias = val;
+                }
+            }, 500);
+        }
+
+        const photoEmojis = ['🌸', '✨', '🌹', '🌙', '💫', '🌺', '🍃', '🌠'];
+        function simulatePhotoUpload() {
+            uploadedPhotos++;
+            const bar = document.getElementById('photoBar');
+            const isNSFW = uploadedPhotos > 2 && Math.random() < 0.4;
+            bar.innerHTML += `
+        <div class="photo-thumb">${photoEmojis[uploadedPhotos - 1] || '📸'}
+          ${isNSFW ? '<div class="nsfw-tag">NSFW</div>' : ''}
+        </div>`;
+            document.getElementById('photoCount').textContent = uploadedPhotos + ' / 4 required' + (uploadedPhotos >= 4 ? ' ✓' : '');
+            if (uploadedPhotos >= 4) document.getElementById('photoNextBtn').classList.remove('hidden');
+        }
+
+        function simulateHealthUpload() {
+            document.getElementById('healthIcon').textContent = '✅';
+            document.getElementById('healthBadge').style.display = 'block';
+            Aurora.showToast('Health certificate uploaded', 'success', 3000);
+        }
+
+        function selectRole(role, el) {
+            selectedRole = role;
+            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('roleNextBtn').disabled = false;
+        }
+
+        function completeOnboarding() {
+            chosenAlias = chosenAlias || document.getElementById('aliasInput')?.value || 'AuroraUser';
+            Aurora.login({ alias: chosenAlias, role: selectedRole || 'client', verificationStatus: 'pending', city: 'Nairobi' });
+            nextStep();
+        }
+        function finishDone() {
+            const alias = Aurora.getUser()?.alias || 'You';
+            document.getElementById('userAliasDisplay').innerHTML = `<span class="chip-icon">✦</span> Welcome, ${alias}`;
+        }
+
+        buildProgress();
+    </script>
+</body>
+
+</html>

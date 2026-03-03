@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aurora — Indulge Your Desires. Discreetly.</title>
+  <meta name="description" content="Aurora is Kenya's premium social introduction platform for confident women who value discretion, elegance, and genuine connection."/>
+  <link rel="stylesheet" href="css/aurora.css"/>
+  <style>
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: radial-gradient(ellipse at 25% 30%, rgba(109,59,92,0.7) 0%, var(--aubergine) 55%, #1a0d1c 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,155,122,0.5) 0%, transparent 70%);
+      animation: float var(--dur, 5s) ease-in-out infinite;
+    }
+    .nav-landing {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      padding:1rem 2rem;
+      display:flex; align-items:center; justify-content:space-between;
+      transition: background var(--transition-med);
+    }
+    .nav-landing.scrolled {
+      background: rgba(30,14,32,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .floating-cards {
+      position:absolute; right:6%; top:50%; transform:translateY(-50%);
+      display:flex; flex-direction:column; gap:1rem;
+      animation: fadeInUp 1s 0.5s both;
+    }
+    .float-card {
+      background: rgba(44,26,46,0.88);
+      backdrop-filter: blur(20px);
+      border:1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      min-width:230px;
+    }
+    .float-profile { display:flex; align-items:center; gap:0.875rem; }
+    .float-avatar  { font-size:2.25rem; line-height:1; }
+    .float-name    { font-weight:700; font-size:var(--fs-sm); color:var(--cream); }
+    .float-meta    { font-size:var(--fs-xs); color:var(--text-muted); }
+    .stat-row {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:var(--sp-xl); text-align:center;
+      padding:var(--sp-3xl) 0;
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    }
+    .stat-number { font-family:var(--font-serif); font-size:var(--fs-3xl); font-weight:700; color:var(--gold); }
+    .stat-desc { font-size:var(--fs-xs); color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+    .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:var(--sp-xl); margin-top:var(--sp-2xl); }
+    .feature-icon { font-size:2.25rem; margin-bottom:var(--sp-md); }
+    .feature-item { padding:var(--sp-xl); background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); transition:transform var(--transition-fast); }
+    .feature-item:hover { transform:translateY(-4px); }
+    .steps-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:var(--sp-xl); margin-top:var(--sp-2xl); }
+    .step-num { width:56px; height:56px; border-radius:50%; border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:var(--fs-xl); color:var(--gold); margin:0 auto var(--sp-md); }
+    .testimonial-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--sp-xl); margin-top:var(--sp-2xl); }
+    .testimonial { padding:var(--sp-xl); background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); }
+    .testimonial-text { font-family:var(--font-serif); font-style:italic; font-size:var(--fs-md); line-height:1.75; color:var(--cream); margin-bottom:var(--sp-md); }
+    .testimonial-author { font-size:var(--fs-xs); color:var(--text-muted); }
+    .cta-banner { text-align:center; padding:var(--sp-3xl) var(--sp-xl); background:radial-gradient(ellipse at 50% 50%,rgba(109,59,92,0.25) 0%,transparent 70%); border-radius:var(--radius-xl); border:1px solid var(--border); margin:var(--sp-3xl) 0; }
+    footer { border-top:1px solid var(--border); padding:var(--sp-2xl) 0; text-align:center; }
+    .footer-links { display:flex; gap:var(--sp-xl); justify-content:center; flex-wrap:wrap; margin-bottom:var(--sp-md); }
+    .footer-link { font-size:var(--fs-xs); color:var(--text-muted); transition:color var(--transition-fast); }
+    .footer-link:hover { color:var(--gold); }
+    @media(max-width:900px){ .floating-cards { display:none; } }
+    @media(max-width:600px){
+      .stat-row { grid-template-columns:repeat(3,1fr); gap:var(--sp-md); }
+      .stat-number { font-size:var(--fs-2xl); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="nav-landing" id="mainNav">
+    <div class="topbar-logo">Aurora</div>
+    <div style="display:flex;gap:0.75rem;align-items:center;">
+      <a href="onboarding.html" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="onboarding.html" class="btn btn-primary btn-sm">Join Now</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero-section">
+    <!-- Particles -->
+    <div class="hero-particles" id="particles"></div>
+
+    <div class="container" style="padding-top:90px;position:relative;z-index:2;">
+      <div style="max-width:600px;">
+        <span class="section-eyebrow animate-fade-up">Private Members Only · Kenya</span>
+        <h1 class="animate-fade-up delay-1">
+          Indulge Your<br/>
+          <span class="shimmer-text">Desires.</span><br/>
+          <em style="font-style:italic;font-weight:300;">Discreetly.</em>
+        </h1>
+        <p class="animate-fade-up delay-2" style="font-size:var(--fs-lg);max-width:480px;margin:var(--sp-lg) 0 var(--sp-xl);line-height:1.8;">
+          Kenya's most exclusive social introduction platform. Where confident women meet respectful, verified younger men. Absolute privacy. Casino-inspired matching. Luxury safe venues.
+        </p>
+        <div class="animate-fade-up delay-3" style="display:flex;gap:var(--sp-md);flex-wrap:wrap;align-items:center;margin-bottom:var(--sp-xl);">
+          <span class="badge badge-gold">✦ Members Only</span>
+          <span class="badge badge-green">✓ ID Verified</span>
+          <span class="badge badge-blush">🏨 Safe Venues</span>
+          <span class="badge badge-gray">🔒 Ephemeral Chats</span>
+        </div>
+        <div class="animate-fade-up delay-4" style="display:flex;gap:var(--sp-md);flex-wrap:wrap;">
+          <a href="onboarding.html" class="btn btn-primary btn-xl animate-pulse-ring" id="ctaEnter">Enter Aurora</a>
+          <a href="#how-it-works" class="btn btn-secondary btn-lg">How It Works</a>
+        </div>
+      </div>
+
+      <!-- Floating cards (desktop) -->
+      <div class="floating-cards">
+        <div class="float-card">
+          <div class="float-profile">
+            <div class="float-avatar">👩🏾</div>
+            <div>
+              <div class="float-name">LunaGlow</div>
+              <div class="float-meta">Nairobi · Verified ✓</div>
+            </div>
+          </div>
+          <div style="margin-top:0.75rem;display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="chip active">Fine Dining</span>
+            <span class="chip active">Jazz</span>
+          </div>
+        </div>
+        <div class="float-card" style="margin-left:1.5rem;">
+          <div style="font-size:var(--fs-xs);color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">🎰 Roulette Match</div>
+          <div class="float-profile">
+            <div class="float-avatar">👨🏾</div>
+            <div>
+              <div class="float-name">StormAce, 27</div>
+              <div class="float-meta">Nairobi · Health ✓</div>
+            </div>
+          </div>
+          <div style="margin-top:0.75rem;">
+            <div class="progress-bar"><div class="progress-fill" style="width:96%;"></div></div>
+            <div style="font-size:var(--fs-xs);color:var(--gold);margin-top:4px;">96% Match Score</div>
+          </div>
+        </div>
+        <div class="float-card">
+          <div class="token-chip large"><span class="chip-icon">🪙</span><span data-token-display="total">83</span></div>
+          <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:.5rem;">Connection Tokens</div>
+          <div style="font-size:var(--fs-xs);color:var(--gold);margin-top:3px;">Spin the roulette →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="container">
+    <div class="stat-row">
+      <div><div class="stat-number">6,800+</div><div class="stat-desc">Verified Members</div></div>
+      <div><div class="stat-number">3</div><div class="stat-desc">Cities in Kenya</div></div>
+      <div><div class="stat-number">99%</div><div class="stat-desc">Discretion Rating</div></div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="container" style="padding:var(--sp-3xl) var(--sp-lg);">
+    <div style="text-align:center;">
+      <span class="section-eyebrow">Why Aurora</span>
+      <h2>Built for Her Privacy &amp; Pleasure</h2>
+      <p class="text-muted" style="margin-top:var(--sp-sm);max-width:520px;margin-left:auto;margin-right:auto;">
+        Every feature is designed with a woman's safety, discretion, and satisfaction in mind.
+      </p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item animate-fade-up">
+        <div class="feature-icon">🎰</div>
+        <h4>Roulette Matching</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Spend tokens to spin our casino-style roulette wheel and get matched with a random verified companion. Exciting and discreet.</p>
+      </div>
+      <div class="feature-item animate-fade-up delay-1">
+        <div class="feature-icon">🏨</div>
+        <h4>Safe Aurora Venues</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">All meetings happen at partner hotels or Aurora-owned private suites — CCTV, security staff, and panic buttons included.</p>
+      </div>
+      <div class="feature-item animate-fade-up delay-2">
+        <div class="feature-icon">💬</div>
+        <h4>Ephemeral Messages</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Messages disappear after being read by default. Stored securely for 30 days only for dispute resolution.</p>
+      </div>
+      <div class="feature-item animate-fade-up delay-3">
+        <div class="feature-icon">🔐</div>
+        <h4>Alias-Only Identity</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Your real name never appears. You choose a permanent alias. ID verification is for safety — never shown to others.</p>
+      </div>
+      <div class="feature-item animate-fade-up delay-4">
+        <div class="feature-icon">💰</div>
+        <h4>Escrow Protection</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Booking fees held in escrow until both parties confirm a positive meeting. Full dispute resolution by Aurora admin.</p>
+      </div>
+      <div class="feature-item animate-fade-up delay-5">
+        <div class="feature-icon">📱</div>
+        <h4>M-Pesa &amp; Crypto</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Buy tokens via M-Pesa, Airtel Money, Visa/Mastercard, or USDT/USDC stablecoins. Fast, flexible, private.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="container" id="how-it-works" style="padding:var(--sp-2xl) var(--sp-lg);">
+    <div style="text-align:center;">
+      <span class="section-eyebrow">The Process</span>
+      <h2>Four Steps to Privacy &amp; Connection</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item animate-fade-up" style="text-align:center;">
+        <div class="step-num">1</div>
+        <h4 style="font-family:var(--font-serif);">Verify &amp; Choose Alias</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Upload ID for age verification. Real identity locked away. Your alias is how the world sees you.</p>
+      </div>
+      <div class="step-item animate-fade-up delay-1" style="text-align:center;">
+        <div class="step-num">2</div>
+        <h4 style="font-family:var(--font-serif);">Buy Tokens</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Purchase Connection or Experience Tokens via M-Pesa, card, or crypto. No subscription, pay only for what you use.</p>
+      </div>
+      <div class="step-item animate-fade-up delay-2" style="text-align:center;">
+        <div class="step-num">3</div>
+        <h4 style="font-family:var(--font-serif);">Match &amp; Connect</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Swipe curated profiles or spin the Roulette for a random match. Message requests, gallery unlocks — all token-powered.</p>
+      </div>
+      <div class="step-item animate-fade-up delay-3" style="text-align:center;">
+        <div class="step-num">4</div>
+        <h4 style="font-family:var(--font-serif);">Book a Safe Venue</h4>
+        <p style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:var(--sp-sm);">Book an Aurora-approved venue. Escrow holds funds. After your meeting, rate your experience — funds released automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="container" style="padding:var(--sp-2xl) var(--sp-lg);">
+    <div style="text-align:center;margin-bottom:var(--sp-lg);">
+      <span class="section-eyebrow">Member Stories</span>
+      <h2>What Our Women Say</h2>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Aurora is what every confident woman deserves. Total discretion, beautiful venues, and men who actually know how to treat a queen."</p>
+        <div class="testimonial-author">LunaGlow · Nairobi · Verified Member</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"The roulette feature is addictive in the best way. I never know who I'll match with — and the excitement is half the thrill."</p>
+        <div class="testimonial-author">OnyxQueen · Mombasa · Verified Member</div>
+      </div>
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Knowing that messages disappear and my real name stays hidden makes me feel completely safe to be myself. I love this platform."</p>
+        <div class="testimonial-author">VelvetDusk · Nairobi · Verified Member</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="container">
+    <div class="cta-banner">
+      <span class="section-eyebrow">Begin Today</span>
+      <h2 style="margin:var(--sp-sm) 0 var(--sp-md);">Your Chapter of Desire Awaits</h2>
+      <p class="text-muted" style="max-width:480px;margin:0 auto var(--sp-xl);">Join thousands of confident Kenyan women who are living, loving, and connecting on their own terms.</p>
+      <div style="display:flex;gap:var(--sp-md);justify-content:center;flex-wrap:wrap;">
+        <a href="onboarding.html" class="btn btn-primary btn-lg">I'm a Woman — Join</a>
+        <a href="onboarding.html?role=companion" class="btn btn-secondary btn-lg">I'm a Man — Apply</a>
+      </div>
+      <p class="text-muted mt-lg" style="font-size:var(--fs-xs);">🔒 ID Required · 21+ Only · Kenya Data Protection Act Compliant · Not affiliated with any escort service.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="topbar-logo" style="font-size:var(--fs-2xl);margin-bottom:var(--sp-md);">Aurora</div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms of Service</a>
+        <a href="#" class="footer-link">Safety</a>
+        <a href="#" class="footer-link">Legal Disclaimer</a>
+        <a href="#" class="footer-link">Contact</a>
+        <a href="admin.html" class="footer-link" style="opacity:0.4;">Admin</a>
+      </div>
+      <p style="font-size:var(--fs-xs);color:var(--text-muted);">© 2026 Aurora Technologies Ltd. Nairobi, Kenya. All rights reserved.</p>
+      <p style="font-size:10px;color:rgba(249,242,231,0.3);margin-top:var(--sp-sm);max-width:600px;margin-left:auto;margin-right:auto;">
+        Aurora is a social introduction and venue booking platform. It does not facilitate or endorse prostitution or any illegal activity. All users must be 21+. By using Aurora, you agree to our Terms of Service and Privacy Policy.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/aurora-core.js"></script>
+  <script>
+    // Sticky nav
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Animated particles
+    const pc = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      const size = 4 + Math.random() * 80;
+      p.className = 'particle';
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%; top:${Math.random()*100}%;
+        --dur:${4+Math.random()*6}s;
+        animation-delay: -${Math.random()*5}s;
+        opacity:${0.03 + Math.random()*0.12};
+      `;
+      pc.appendChild(p);
+    }
+  </script>
+</body>
+</html>
